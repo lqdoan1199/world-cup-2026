@@ -1266,16 +1266,46 @@ function renderBracket() {
     // Center Final & 3rd Place cards
     const finalContainer = document.getElementById("match-final");
     finalContainer.innerHTML = "";
+    finalContainer.className = `match-card central-match-card final-card ${getCustomStatusClass(state.matches[30])}`;
     finalContainer.appendChild(createMatchCardInnerHTML(state.matches[30]));
     
     const thirdPlaceContainer = document.getElementById("match-third-place");
     thirdPlaceContainer.innerHTML = "";
+    thirdPlaceContainer.className = `match-card central-match-card third-place-card ${getCustomStatusClass(state.matches[31])}`;
     thirdPlaceContainer.appendChild(createMatchCardInnerHTML(state.matches[31]));
+}
+
+function getCustomStatusClass(match) {
+    if (!match) return "";
+    
+    // Check if match is today
+    const today = new Date();
+    const d = today.getDate();
+    const m = today.getMonth() + 1;
+    const y = today.getFullYear();
+    const todayStr = `${d}/${m}/${y}`;
+    
+    const dateParts = match.date ? match.date.split(" - ") : [];
+    const matchDateStr = dateParts[1] ? dateParts[1].trim() : "";
+    const isToday = matchDateStr === todayStr;
+    
+    let classes = [];
+    if (isToday) {
+        classes.push("today-match");
+    }
+    
+    if (match.status === "upcoming") {
+        classes.push("upcoming-match");
+    } else if (match.status === "live") {
+        classes.push("live-match");
+    }
+    
+    return classes.join(" ");
 }
 
 function createMatchCardHTML(match) {
     const card = document.createElement("div");
-    card.className = `match-card ${match.status === 'live' ? 'live-match' : ''}`;
+    card.className = `match-card ${getCustomStatusClass(match)}`;
     card.setAttribute("data-match-id", match.id);
     card.addEventListener("click", () => openMatchModal(match.id));
     
