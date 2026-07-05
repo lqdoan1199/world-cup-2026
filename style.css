@@ -71,8 +71,8 @@ body {
     background-color: var(--bg-dark);
     color: var(--color-text-main);
     font-family: var(--font-body);
-    min-height: 100vh;
-    overflow-x: hidden;
+    height: 100vh;
+    overflow: hidden;
     position: relative;
     transition: background-color 0.5s ease, color 0.3s ease;
 }
@@ -121,7 +121,8 @@ body.light-theme .bg-glow {
 .app-layout {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* HEADER */
@@ -137,6 +138,7 @@ body.light-theme .bg-glow {
     position: sticky;
     top: 0;
     z-index: 100;
+    flex-shrink: 0;
 }
 
 .header-logo {
@@ -243,7 +245,7 @@ body.light-theme .header-ticker {
     padding: 20px;
     gap: 20px;
     overflow: hidden;
-    height: calc(100vh - 120px);
+    min-height: 0;
 }
 
 /* SIDEBARS */
@@ -1454,6 +1456,7 @@ body.light-theme .player-list-ul li {
     border-top: 1px solid var(--border-color);
     font-size: 0.75rem;
     color: var(--color-text-muted);
+    flex-shrink: 0;
 }
 .footer-links a {
     color: var(--color-accent);
@@ -1502,6 +1505,16 @@ body.light-theme .player-list-ul li {
    RESPONSIVE LAYOUT MEDIA QUERIES
    ---------------------------------------------------- */
 @media (max-width: 1400px) {
+    body {
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+    }
+    .app-layout {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
     .app-main {
         flex-direction: column;
         overflow-y: auto;
