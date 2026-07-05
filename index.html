@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Cup 2026 - Theo Dõi Kết Quả & Lịch Thi Đấu Real-Time</title>
-    
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏆</text></svg>">
+
     <!-- Google Fonts & Font Awesome Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- Background Decoration Grid & Glowing Orbs -->
@@ -21,7 +27,7 @@
     <div class="bg-glow bg-glow-3"></div>
 
     <div class="app-layout">
-        
+
         <!-- HEADER -->
         <header class="app-header">
             <div class="header-logo">
@@ -31,13 +37,13 @@
                     <span>KẾT QUẢ & LỊCH THI ĐẤU THỰC TẾ</span>
                 </div>
             </div>
-            
+
             <div class="header-center-info">
                 <div class="header-ticker">
                     <div class="ticker-pulse" id="api-status-pulse"></div>
                     <div class="ticker-text" id="ticker-status">Đang kết nối dữ liệu FIFA / VTV API...</div>
                 </div>
-                
+
                 <div class="header-stats">
                     <div class="header-stat-item">
                         <span class="stat-label">Nguồn:</span>
@@ -55,7 +61,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="header-actions">
                 <button id="btn-theme-toggle" class="header-btn" title="Chuyển chế độ tối/sáng">
                     <i class="fa-solid fa-moon"></i>
@@ -68,17 +74,17 @@
 
         <!-- MAIN CONTENT CONTAINER -->
         <main class="app-main">
-            
+
             <!-- LEFT PANEL: API CONNECTION & LIVE TICKER -->
             <section class="sidebar left-sidebar">
                 <div class="card control-card">
                     <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-down text-accent"></i> KẾT NỐI API</h2>
-                    
+
                     <div class="control-grid">
                         <button id="btn-refresh-api" class="btn btn-primary btn-block">
                             <i class="fa-solid fa-rotate"></i> Cập nhật dữ liệu
                         </button>
-                        
+
                         <button id="btn-auto-refresh" class="btn btn-secondary btn-block active-toggle">
                             <i class="fa-solid fa-sync fa-spin"></i> Tự động đồng bộ: BẬT
                         </button>
@@ -125,7 +131,7 @@
 
             <!-- CENTER WORKSPACE: THE ZOOMABLE BRACKET -->
             <section class="workspace">
-                
+
                 <!-- Zoom Controls Overlay -->
                 <div class="zoom-controls">
                     <button id="zoom-in" title="Phóng to"><i class="fa-solid fa-plus"></i></button>
@@ -146,65 +152,75 @@
                     <div class="bracket-content" id="bracket-content">
                         <!-- SVG Connection Paths -->
                         <svg class="bracket-svg" id="bracket-svg"></svg>
-                        
+
                         <!-- Columns for Symmetrical Structure -->
                         <div class="bracket-columns">
-                            
+
                             <!-- [LEFT HALF] -->
                             <!-- Vòng 32 Đội - Trái -->
-                            <div class="bracket-column round-32" data-round="0" data-side="left" id="round-0-left"></div>
-                            
+                            <div class="bracket-column round-32" data-round="0" data-side="left" id="round-0-left">
+                            </div>
+
                             <!-- Vòng 16 Đội - Trái -->
-                            <div class="bracket-column round-16" data-round="1" data-side="left" id="round-1-left"></div>
-                            
+                            <div class="bracket-column round-16" data-round="1" data-side="left" id="round-1-left">
+                            </div>
+
                             <!-- Tứ kết - Trái -->
                             <div class="bracket-column round-8" data-round="2" data-side="left" id="round-2-left"></div>
-                            
+
                             <!-- Bán kết - Trái -->
                             <div class="bracket-column round-4" data-round="3" data-side="left" id="round-3-left"></div>
 
                             <!-- [CENTER PIECE] -->
                             <div class="bracket-center">
                                 <div class="trophy-wrapper">
-                                    <img src="assets/trophy.png" alt="World Cup Trophy" class="center-trophy-img" id="trophy-image">
+                                    <img src="assets/trophy.png" alt="World Cup Trophy" class="center-trophy-img"
+                                        id="trophy-image">
                                     <div class="trophy-glow"></div>
                                 </div>
-                                
+
                                 <!-- Central Matches: Chung kết & Hạng ba -->
                                 <div class="central-matches">
                                     <div class="central-round" id="round-final">
                                         <div class="central-title">CHUNG KẾT</div>
-                                        <div id="match-final" class="match-card central-match-card final-card" data-match-id="30">
+                                        <div id="match-final" class="match-card central-match-card final-card"
+                                            data-match-id="30">
                                             <!-- Rendered dynamically -->
                                         </div>
                                     </div>
-                                    
+
                                     <div class="central-round" id="round-third-place">
                                         <div class="central-title text-muted">TRANH HẠNG BA</div>
-                                        <div id="match-third-place" class="match-card central-match-card third-place-card" data-match-id="31">
+                                        <div id="match-third-place"
+                                            class="match-card central-match-card third-place-card" data-match-id="31">
                                             <!-- Rendered dynamically -->
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="mascots-wrapper">
-                                    <img src="assets/mascots.png" alt="World Cup 2026 Mascots" class="center-mascots-img" id="mascots-image">
+                                    <img src="assets/mascots.png" alt="World Cup 2026 Mascots"
+                                        class="center-mascots-img" id="mascots-image">
                                 </div>
                             </div>
 
                             <!-- [RIGHT HALF] -->
                             <!-- Bán kết - Phải -->
-                            <div class="bracket-column round-4" data-round="3" data-side="right" id="round-3-right"></div>
-                            
+                            <div class="bracket-column round-4" data-round="3" data-side="right" id="round-3-right">
+                            </div>
+
                             <!-- Tứ kết - Phải -->
-                            <div class="bracket-column round-8" data-round="2" data-side="right" id="round-2-right"></div>
-                            
+                            <div class="bracket-column round-8" data-round="2" data-side="right" id="round-2-right">
+                            </div>
+
                             <!-- Vòng 16 Đội - Phải -->
-                            <div class="bracket-column round-16" data-round="1" data-side="right" id="round-1-right"></div>
-                            
+                            <div class="bracket-column round-16" data-round="1" data-side="right" id="round-1-right">
+                            </div>
+
                             <!-- Vòng 32 Đội - Phải -->
-                            <div class="bracket-column round-32" data-round="0" data-side="right" id="round-0-right"></div>
-                            
+                            <div class="bracket-column round-32" data-round="0" data-side="right" id="round-0-right">
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -227,7 +243,7 @@
                         <button class="tab-btn active" data-tab="cards">Thẻ Phạt</button>
                         <button class="tab-btn" data-tab="teams">Bàn thắng Đội</button>
                     </div>
-                    
+
                     <div class="tab-content" id="tab-cards">
                         <div class="stats-list" id="cards-leaderboard">
                             <div class="stats-empty-state font-small">Đang tải thẻ phạt...</div>
@@ -239,7 +255,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </section>
         </main>
 
@@ -247,7 +263,7 @@
         <footer class="app-footer">
             <p>&copy; 2026 World Cup Bracket Tracker. Đồng bộ thời gian thực từ API FIFA & VTV.</p>
             <p class="footer-links">
-                <a href="#" id="btn-instructions">Hướng dẫn sử dụng</a> | 
+                <a href="#" id="btn-instructions">Hướng dẫn sử dụng</a> |
                 <a href="https://infographics.vn" target="_blank" rel="noopener">Tham khảo Infographics</a>
             </p>
         </footer>
@@ -263,7 +279,7 @@
                 </div>
                 <button class="modal-close" id="modal-close-btn">&times;</button>
             </div>
-            
+
             <div class="modal-body">
                 <!-- Live Scoreboard Header -->
                 <div class="modal-scoreboard">
@@ -271,7 +287,7 @@
                         <img src="" alt="" id="modal-flag-home" class="modal-team-flag">
                         <h3 id="modal-name-home">Đức</h3>
                     </div>
-                    
+
                     <div class="modal-score-center">
                         <div class="modal-time-badge" id="modal-match-time">0'</div>
                         <div class="modal-score-row">
@@ -284,7 +300,7 @@
                         </div>
                         <div class="modal-status-badge" id="modal-match-status">ĐANG TẢI...</div>
                     </div>
-                    
+
                     <div class="modal-team modal-team-away">
                         <img src="" alt="" id="modal-flag-away" class="modal-team-flag">
                         <h3 id="modal-name-away">Paraguay</h3>
@@ -293,9 +309,12 @@
 
                 <!-- Tabs: Match events timeline, Team lineups, Match stats -->
                 <div class="modal-nav">
-                    <button class="modal-tab active" data-modal-tab="timeline"><i class="fa-solid fa-timeline"></i> Diễn Biến</button>
-                    <button class="modal-tab" data-modal-tab="stats"><i class="fa-solid fa-chart-simple"></i> Thống Kê</button>
-                    <button class="modal-tab" data-modal-tab="lineups"><i class="fa-solid fa-users"></i> Đội Hình</button>
+                    <button class="modal-tab active" data-modal-tab="timeline"><i class="fa-solid fa-timeline"></i> Diễn
+                        Biến</button>
+                    <button class="modal-tab" data-modal-tab="stats"><i class="fa-solid fa-chart-simple"></i> Thống
+                        Kê</button>
+                    <button class="modal-tab" data-modal-tab="lineups"><i class="fa-solid fa-users"></i> Đội
+                        Hình</button>
                 </div>
 
                 <div class="modal-tab-content-container">
@@ -323,12 +342,12 @@
                                 <div class="pitch-center-line"></div>
                                 <div class="pitch-penalty-area home-penalty"></div>
                                 <div class="pitch-penalty-area away-penalty"></div>
-                                
+
                                 <!-- Home Team Lineup (top/left) -->
                                 <div class="pitch-lineup team-home-lineup" id="lineup-home-players">
                                     <!-- Player dots -->
                                 </div>
-                                
+
                                 <!-- Away Team Lineup (bottom/right) -->
                                 <div class="pitch-lineup team-away-lineup" id="lineup-away-players">
                                     <!-- Player dots -->
@@ -356,17 +375,24 @@
         <div class="modal-card small-modal-card">
             <div class="modal-header">
                 <div class="modal-title-group">
-                    <h3 style="margin: 0; font-family: 'Outfit', sans-serif;"><i class="fa-solid fa-circle-question text-accent"></i> Hướng dẫn sử dụng</h3>
+                    <h3 style="margin: 0; font-family: 'Outfit', sans-serif;"><i
+                            class="fa-solid fa-circle-question text-accent"></i> Hướng dẫn sử dụng</h3>
                 </div>
                 <button class="modal-close" id="instructions-close-btn">&times;</button>
             </div>
-            <div class="modal-body" style="padding: 20px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; line-height: 1.6;">
-                <p>Chào mừng bạn đến với **World Cup 2026 Live Bracket Tracker**! Đây là trang web theo dõi kết quả thực tế của giải đấu.</p>
-                <h4 style="color: var(--color-accent); font-family: 'Outfit'; margin-top: 15px;">Các tính năng chính:</h4>
+            <div class="modal-body"
+                style="padding: 20px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; line-height: 1.6;">
+                <p>Chào mừng bạn đến với **World Cup 2026 Live Bracket Tracker**! Đây là trang web theo dõi kết quả thực
+                    tế của giải đấu.</p>
+                <h4 style="color: var(--color-accent); font-family: 'Outfit'; margin-top: 15px;">Các tính năng chính:
+                </h4>
                 <ul style="padding-left: 20px; margin-bottom: 15px;">
-                    <li><strong>Đồng bộ Live API:</strong> Hệ thống tự động fetch dữ liệu kết quả thi đấu thực tế từ API và cập nhật tỉ số lên bracket mỗi 30 giây.</li>
-                    <li><strong>Tương tác nhánh đấu (Bracket):</strong> Sử dụng con lăn chuột để phóng to/thu nhỏ, nhấn giữ chuột trái và kéo để di chuyển nhánh đấu.</li>
-                    <li><strong>Nhánh đấu động:</strong> Khi một trận đấu kết thúc thực tế, đội tuyển thắng cuộc sẽ tự động được điền lên vòng tiếp theo trên sơ đồ nhánh đấu.</li>
+                    <li><strong>Đồng bộ Live API:</strong> Hệ thống tự động fetch dữ liệu kết quả thi đấu thực tế từ API
+                        và cập nhật tỉ số lên bracket mỗi 30 giây.</li>
+                    <li><strong>Tương tác nhánh đấu (Bracket):</strong> Sử dụng con lăn chuột để phóng to/thu nhỏ, nhấn
+                        giữ chuột trái và kéo để di chuyển nhánh đấu.</li>
+                    <li><strong>Nhánh đấu động:</strong> Khi một trận đấu kết thúc thực tế, đội tuyển thắng cuộc sẽ tự
+                        động được điền lên vòng tiếp theo trên sơ đồ nhánh đấu.</li>
                     <li><strong>Xem chi tiết trận đấu:</strong> Click trực tiếp vào bất kỳ trận nào trên sơ đồ để xem:
                         <ul style="padding-left:15px">
                             <li>Diễn biến bàn thắng thực tế kèm thời gian ghi bàn và cầu thủ lập công.</li>
@@ -374,7 +400,8 @@
                             <li>Đội hình ra sân 2D và danh sách số áo thi đấu chính thức.</li>
                         </ul>
                     </li>
-                    <li><strong>Bảng xếp hạng tổng hợp:</strong> Theo dõi danh sách Vua phá lưới (Top Scorers), thẻ phạt của toàn giải đấu tính đến thời điểm hiện tại.</li>
+                    <li><strong>Bảng xếp hạng tổng hợp:</strong> Theo dõi danh sách Vua phá lưới (Top Scorers), thẻ phạt
+                        của toàn giải đấu tính đến thời điểm hiện tại.</li>
                 </ul>
             </div>
         </div>
@@ -382,4 +409,5 @@
 
     <script src="app.js?v=4"></script>
 </body>
+
 </html>
