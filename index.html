@@ -32,9 +32,28 @@
                 </div>
             </div>
             
-            <div class="header-ticker">
-                <div class="ticker-pulse" id="api-status-pulse"></div>
-                <div class="ticker-text" id="ticker-status">Đang kết nối dữ liệu FIFA / VTV API...</div>
+            <div class="header-center-info">
+                <div class="header-ticker">
+                    <div class="ticker-pulse" id="api-status-pulse"></div>
+                    <div class="ticker-text" id="ticker-status">Đang kết nối dữ liệu FIFA / VTV API...</div>
+                </div>
+                
+                <div class="header-stats">
+                    <div class="header-stat-item">
+                        <span class="stat-label">Nguồn:</span>
+                        <span class="stat-value text-accent" style="font-size:0.75rem">FIFA API</span>
+                    </div>
+                    <div class="header-divider"></div>
+                    <div class="header-stat-item">
+                        <span class="stat-label">Cập nhật:</span>
+                        <span class="stat-value text-muted" id="api-last-update">Chưa cập nhật</span>
+                    </div>
+                    <div class="header-divider"></div>
+                    <div class="header-stat-item">
+                        <span class="stat-label">Số trận:</span>
+                        <span class="stat-value text-success" id="api-games-count">0 / 104</span>
+                    </div>
+                </div>
             </div>
             
             <div class="header-actions">
@@ -65,20 +84,7 @@
                         </button>
                     </div>
 
-                    <div class="sim-stats">
-                        <div class="sim-stat-item">
-                            <span class="stat-label">Nguồn dữ liệu:</span>
-                            <span class="stat-value text-accent" style="font-size:0.75rem">FIFA OpenData API</span>
-                        </div>
-                        <div class="sim-stat-item">
-                            <span class="stat-label">Cập nhật lúc:</span>
-                            <span class="stat-value text-muted" id="api-last-update">Chưa cập nhật</span>
-                        </div>
-                        <div class="sim-stat-item">
-                            <span class="stat-label">Tổng số trận:</span>
-                            <span class="stat-value text-success" id="api-games-count">0 / 104</span>
-                        </div>
-                    </div>
+
                 </div>
 
                 <div class="card ticker-card">
@@ -89,6 +95,29 @@
                         <div class="ticker-empty-state">
                             <i class="fa-regular fa-bell"></i>
                             <p>Không có sự kiện live nào. Nhấp Cập nhật dữ liệu để đồng bộ kết quả mới nhất.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tournament Stats Summary -->
+                <div class="card stats-card summary-card">
+                    <h2 class="card-title"><i class="fa-solid fa-chart-pie text-success"></i> TỔNG QUAN GIẢI ĐẤU</h2>
+                    <div class="summary-stats-grid">
+                        <div class="sum-stat-box">
+                            <span class="sum-val" id="total-goals">0</span>
+                            <span class="sum-lbl">Bàn Thắng</span>
+                        </div>
+                        <div class="sum-stat-box">
+                            <span class="sum-val" id="goals-per-match">0.00</span>
+                            <span class="sum-lbl">Bàn/Trận</span>
+                        </div>
+                        <div class="sum-stat-box text-warning">
+                            <span class="sum-val" id="total-yellow-cards">0</span>
+                            <span class="sum-lbl">Thẻ Vàng</span>
+                        </div>
+                        <div class="sum-stat-box text-danger">
+                            <span class="sum-val" id="total-red-cards">0</span>
+                            <span class="sum-lbl">Thẻ Đỏ</span>
                         </div>
                     </div>
                 </div>
@@ -191,7 +220,7 @@
                 </div>
 
                 <!-- Cards Statistics Card -->
-                <div class="card stats-card">
+                <div class="card stats-card cards-stats-card">
                     <h2 class="card-title"><i class="fa-solid fa-copy text-warning"></i> THẺ PHẠT & SỐ LIỆU</h2>
                     <div class="card-stats-tabs">
                         <button class="tab-btn active" data-tab="cards">Thẻ Phạt</button>
@@ -210,28 +239,6 @@
                     </div>
                 </div>
                 
-                <!-- Tournament Stats Summary -->
-                <div class="card stats-card summary-card">
-                    <h2 class="card-title"><i class="fa-solid fa-chart-pie text-success"></i> TỔNG QUAN GIẢI ĐẤU</h2>
-                    <div class="summary-stats-grid">
-                        <div class="sum-stat-box">
-                            <span class="sum-val" id="total-goals">0</span>
-                            <span class="sum-lbl">Bàn Thắng</span>
-                        </div>
-                        <div class="sum-stat-box">
-                            <span class="sum-val" id="goals-per-match">0.00</span>
-                            <span class="sum-lbl">Bàn/Trận</span>
-                        </div>
-                        <div class="sum-stat-box text-warning">
-                            <span class="sum-val" id="total-yellow-cards">0</span>
-                            <span class="sum-lbl">Thẻ Vàng</span>
-                        </div>
-                        <div class="sum-stat-box text-danger">
-                            <span class="sum-val" id="total-red-cards">0</span>
-                            <span class="sum-lbl">Thẻ Đỏ</span>
-                        </div>
-                    </div>
-                </div>
             </section>
         </main>
 

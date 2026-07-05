@@ -258,6 +258,12 @@ body.light-theme .header-ticker {
     overflow-y: auto;
     padding-right: 5px;
 }
+.left-sidebar {
+    width: 320px;
+}
+.right-sidebar {
+    width: 400px;
+}
 
 /* COMMON CARDS */
 .card {
@@ -384,38 +390,54 @@ body.light-theme .header-ticker {
     border: none;
 }
 
-.sim-stats {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 12px;
-    border: 1px solid var(--border-color);
+sidebar-stats {
+    /* Kept for backward compatibility if any JS uses it, though none does */
 }
-.sim-stat-item {
+
+.header-center-info {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+.header-stats {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 18px;
+    border-radius: 30px;
+    border: 1px solid var(--border-color);
     font-size: 0.8rem;
-    margin-bottom: 6px;
 }
-.sim-stat-item:last-child {
-    margin-bottom: 0;
+body.light-theme .header-stats {
+    background: rgba(255, 255, 255, 0.5);
 }
-.sim-stat-item .stat-label {
+.header-stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.header-stat-item .stat-label {
     color: var(--color-text-muted);
     font-weight: 500;
 }
-.sim-stat-item .stat-value {
+.header-stat-item .stat-value {
     font-weight: 700;
+}
+.header-divider {
+    width: 1px;
+    height: 14px;
+    background-color: var(--border-color);
 }
 
 /* LIVE EVENTS TICKER */
 .ticker-card {
-    flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
 }
 .ticker-container {
-    flex: 1;
+    height: 270px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -856,11 +878,28 @@ body.light-theme .winner .team-name {
     display: none;
 }
 
+.cards-stats-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.cards-stats-card .tab-content:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+.cards-stats-card .stats-list {
+    flex: 1;
+    max-height: none;
+}
+
 .stats-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    max-height: 200px;
+    max-height: 202px;
     overflow-y: auto;
     padding-right: 3px;
 }
@@ -1520,7 +1559,7 @@ body.light-theme .player-list-ul li {
         overflow-y: auto;
         height: auto;
     }
-    .sidebar {
+    .sidebar, .left-sidebar, .right-sidebar {
         width: 100%;
         flex-direction: row;
         overflow-y: visible;
@@ -1532,6 +1571,10 @@ body.light-theme .player-list-ul li {
     }
     .ticker-card {
         height: 300px;
+    }
+    .ticker-container {
+        height: auto;
+        flex: 1;
     }
     .workspace {
         height: 650px;
@@ -1545,8 +1588,18 @@ body.light-theme .player-list-ul li {
         gap: 10px;
         align-items: stretch;
     }
+    .header-center-info {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 8px;
+    }
     .header-ticker {
         max-width: 100%;
+    }
+    .header-stats {
+        justify-content: space-around;
+        padding: 8px 10px;
     }
     .sidebar {
         flex-direction: column;

@@ -419,7 +419,28 @@ const TEAMS = {
         { name: "J. Ayew", pos: "FW", num: 9 },
         { name: "I. Williams", pos: "FW", num: 19 },
         { name: "A. Ayew", pos: "FW", num: 10 }
-    ]}
+    ]},
+
+    // Group-stage-only teams (minimal entries for scorer tracking)
+    kr: { name: "Hàn Quốc", code: "kr", power: 78, squad: [] },
+    cz: { name: "Czech Republic", code: "cz", power: 73, squad: [] },
+    qa: { name: "Qatar", code: "qa", power: 70, squad: [] },
+    ht: { name: "Haiti", code: "ht", power: 60, squad: [] },
+    sc: { name: "Scotland", code: "sc", power: 74, squad: [] },
+    tn: { name: "Tunisia", code: "tn", power: 72, squad: [] },
+    ir: { name: "Iran", code: "ir", power: 73, squad: [] },
+    nz: { name: "New Zealand", code: "nz", power: 62, squad: [] },
+    sa: { name: "Saudi Arabia", code: "sa", power: 71, squad: [] },
+    uy: { name: "Uruguay", code: "uy", power: 84, squad: [] },
+    sn: { name: "Senegal", code: "sn", power: 80, squad: [] },
+    iq: { name: "Iraq", code: "iq", power: 68, squad: [] },
+    cw: { name: "Curaçao", code: "cw", power: 55, squad: [] },
+    jo: { name: "Jordan", code: "jo", power: 65, squad: [] },
+    uz: { name: "Uzbekistan", code: "uz", power: 70, squad: [] },
+    pa: { name: "Panama", code: "pa", power: 68, squad: [] },
+    tr: { name: "Turkey", code: "tr", power: 79, squad: [] },
+    cv: { name: "Cape Verde", code: "cv", power: 58, squad: [] },
+    dz: { name: "Algeria", code: "dz", power: 77, squad: [] }
 };
 
 // --- 2. MATCH SLOTS (Bracket coordinates & mapping) ---
@@ -768,7 +789,57 @@ async function fetchRealTimeData() {
         state.cards = {};
         state.teamGoals = {};
         
-        // Loop and parse games into state matches
+        // First: collect scorer/card/teamGoals stats from ALL games (group + knockout)
+        games.forEach(game => {
+            if (game.finished !== "TRUE") return;
+            const gameId = parseInt(game.id);
+            
+            const homeTeamId = getTeamIdByName(game.home_team_name_en);
+            const awayTeamId = getTeamIdByName(game.away_team_name_en);
+            
+            // Skip if already a knockout game (will be processed below with full bracket logic)
+            if (API_KNOCKOUT_MAPPING.hasOwnProperty(gameId)) return;
+            
+            // Parse group stage goals for leaderboard
+            const homeScorersList = parseScorers(game.home_scorers);
+            const awayScorersList = parseScorers(game.away_scorers);
+            
+            homeScorersList.forEach(scorerStr => {
+                if (!scorerStr || !homeTeamId) return;
+                const team = TEAMS[homeTeamId];
+                let player = scorerStr.trim();
+                let isOwnGoal = scorerStr.toLowerCase().includes("(og)") || scorerStr.toLowerCase().includes("og");
+                const minMatch = scorerStr.match(/(\d+(?:\+\d+)?)'/);
+                if (minMatch) {
+                    player = scorerStr.replace(/\d+(?:\+\d+)?'/, "").replace(/\(p\)/i, "").replace(/\(og\)/i, "").trim();
+                }
+                if (!isOwnGoal && team) {
+                    state.scorers[player] = state.scorers[player]
+                        ? { goals: state.scorers[player].goals + 1, teamCode: team.code }
+                        : { goals: 1, teamCode: team.code };
+                    state.teamGoals[team.code] = (state.teamGoals[team.code] || 0) + 1;
+                }
+            });
+            
+            awayScorersList.forEach(scorerStr => {
+                if (!scorerStr || !awayTeamId) return;
+                const team = TEAMS[awayTeamId];
+                let player = scorerStr.trim();
+                let isOwnGoal = scorerStr.toLowerCase().includes("(og)") || scorerStr.toLowerCase().includes("og");
+                const minMatch = scorerStr.match(/(\d+(?:\+\d+)?)'/);
+                if (minMatch) {
+                    player = scorerStr.replace(/\d+(?:\+\d+)?'/, "").replace(/\(p\)/i, "").replace(/\(og\)/i, "").trim();
+                }
+                if (!isOwnGoal && team) {
+                    state.scorers[player] = state.scorers[player]
+                        ? { goals: state.scorers[player].goals + 1, teamCode: team.code }
+                        : { goals: 1, teamCode: team.code };
+                    state.teamGoals[team.code] = (state.teamGoals[team.code] || 0) + 1;
+                }
+            });
+        });
+        
+        // Then: parse knockout games into bracket state (this also registers their scorers)
         games.forEach(game => {
             const gameId = parseInt(game.id);
             if (API_KNOCKOUT_MAPPING.hasOwnProperty(gameId)) {
@@ -940,12 +1011,12 @@ function addGoalEvent(match, scorerStr, side, teamId) {
     let min = 45;
     let isOwnGoal = scorerStr.toLowerCase().includes("(og)") || scorerStr.toLowerCase().includes("og");
     
-    // Extract minute using regex
-    const minMatch = scorerStr.match(/(\d+)'/);
+    // Extract minute using regex (handles stoppage time like 90+5' or 45+3')
+    const minMatch = scorerStr.match(/(\d+(?:\+\d+)?)'/);
     if (minMatch) {
         min = parseInt(minMatch[1]);
         // Clean name
-        player = scorerStr.replace(/(\d+)'/, "").replace(/\(p\)/i, "").replace(/\(og\)/i, "").trim();
+        player = scorerStr.replace(/\d+(?:\+\d+)?'/, "").replace(/\(p\)/i, "").replace(/\(og\)/i, "").trim();
     }
     
     match.events.push({
@@ -1001,7 +1072,7 @@ function generateDeterministicStats(match, game) {
 
 function generateCardsForSide(match, cardCount, side, teamId, seed) {
     const team = TEAMS[teamId];
-    if (!team) return;
+    if (!team || !team.squad || team.squad.length === 0) return;
     
     for (let i = 0; i < cardCount; i++) {
         // Pick defender/midfielder deterministically
@@ -1091,6 +1162,23 @@ function getTeamIdByName(name) {
     if (n === "algeria") return "dz";
     if (n === "colombia") return "co";
     if (n === "ghana") return "gh";
+    if (n === "south korea" || n === "korea republic") return "kr";
+    if (n === "czech republic" || n === "czechia") return "cz";
+    if (n === "qatar") return "qa";
+    if (n === "haiti") return "ht";
+    if (n === "scotland") return "sc";
+    if (n === "tunisia") return "tn";
+    if (n === "iran") return "ir";
+    if (n === "new zealand") return "nz";
+    if (n === "saudi arabia") return "sa";
+    if (n === "uruguay") return "uy";
+    if (n === "iraq") return "iq";
+    if (n === "curaçao" || n === "curacao") return "cw";
+    if (n === "jordan") return "jo";
+    if (n === "uzbekistan") return "uz";
+    if (n === "panama") return "pa";
+    if (n === "turkey" || n === "türkiye") return "tr";
+    if (n === "cape verde") return "cv";
     return null;
 }
 
@@ -1416,7 +1504,7 @@ function updateLeaderboards() {
     // 1. Top scorers
     const scorersArray = Object.keys(state.scorers).map(name => {
         return { name, ...state.scorers[name] };
-    }).sort((a, b) => b.goals - a.goals).slice(0, 5);
+    }).sort((a, b) => b.goals - a.goals).slice(0, 20);
     
     if (scorersArray.length === 0) {
         topScorersList.innerHTML = '<div class="stats-empty-state">Chưa có bàn thắng nào.</div>';
@@ -1439,7 +1527,7 @@ function updateLeaderboards() {
     // 2. Cards
     const cardsArray = Object.keys(state.cards).map(name => {
         return { name, ...state.cards[name] };
-    }).sort((a, b) => (b.red * 3 + b.yellow) - (a.red * 3 + a.yellow)).slice(0, 5);
+    }).sort((a, b) => (b.red * 3 + b.yellow) - (a.red * 3 + a.yellow)).slice(0, 20);
     
     if (cardsArray.length === 0) {
         cardsLeaderboard.innerHTML = '<div class="stats-empty-state font-small">Chưa có thẻ phạt nào.</div>';
@@ -1462,7 +1550,7 @@ function updateLeaderboards() {
     // 3. Team Goals
     const teamsArray = Object.keys(state.teamGoals).map(code => {
         return { code, goals: state.teamGoals[code] };
-    }).sort((a, b) => b.goals - a.goals).slice(0, 5);
+    }).sort((a, b) => b.goals - a.goals).slice(0, 20);
     
     if (teamsArray.length === 0) {
         teamsLeaderboard.innerHTML = '<div class="stats-empty-state font-small">Chưa có số liệu đội bóng.</div>';
@@ -1512,7 +1600,7 @@ function renderLiveEventsLog(finishedMatches) {
     }
     
     // Sort matches by API sequence/finished
-    const recentMatches = [...finishedMatches].slice(-5).reverse();
+    const recentMatches = [...finishedMatches].slice(-15).reverse();
     
     liveEventsTicker.innerHTML = recentMatches.map(m => {
         const homeName = TEAMS[m.homeId]?.name || "Chưa rõ";
