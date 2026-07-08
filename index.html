@@ -41,13 +41,13 @@
             <div class="header-center-info">
                 <div class="header-ticker">
                     <div class="ticker-pulse" id="api-status-pulse"></div>
-                    <div class="ticker-text" id="ticker-status">Đang kết nối dữ liệu FIFA / VTV API...</div>
+                    <div class="ticker-text" id="ticker-status">Đang kết nối dữ liệu OpenFootball...</div>
                 </div>
 
                 <div class="header-stats">
                     <div class="header-stat-item">
                         <span class="stat-label">Nguồn:</span>
-                        <span class="stat-value text-accent" style="font-size:0.75rem">FIFA API</span>
+                        <span class="stat-value text-accent" style="font-size:0.75rem">OpenFootball</span>
                     </div>
                     <div class="header-divider"></div>
                     <div class="header-stat-item">
@@ -78,7 +78,7 @@
             <!-- LEFT PANEL: API CONNECTION & LIVE TICKER -->
             <section class="sidebar left-sidebar">
                 <div class="card control-card">
-                    <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-down text-accent"></i> KẾT NỐI API</h2>
+                    <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-down text-accent"></i> ĐỒNG BỘ DỮ LIỆU</h2>
 
                     <div class="control-grid">
                         <button id="btn-refresh-api" class="btn btn-primary btn-block">
@@ -261,7 +261,7 @@
 
         <!-- FOOTER -->
         <footer class="app-footer">
-            <p>&copy; 2026 World Cup Bracket Tracker. Đồng bộ thời gian thực từ API FIFA & VTV.</p>
+            <p>&copy; 2026 World Cup Bracket Tracker. Đồng bộ thời gian thực từ OpenFootball.</p>
             <p class="footer-links">
                 <a href="#" id="btn-instructions">Hướng dẫn sử dụng</a> |
                 <a href="https://infographics.vn" target="_blank" rel="noopener">Tham khảo Infographics</a>
@@ -387,8 +387,7 @@
                 <h4 style="color: var(--color-accent); font-family: 'Outfit'; margin-top: 15px;">Các tính năng chính:
                 </h4>
                 <ul style="padding-left: 20px; margin-bottom: 15px;">
-                    <li><strong>Đồng bộ Live API:</strong> Hệ thống tự động fetch dữ liệu kết quả thi đấu thực tế từ API
-                        và cập nhật tỉ số lên bracket mỗi 30 giây.</li>
+                    <li><strong>Đồng bộ OpenFootball:</strong> Hệ thống tự động fetch dữ liệu kết quả thi đấu từ dữ liệu mở OpenFootball và cập nhật tỉ số lên bracket mỗi 30 giây.</li>
                     <li><strong>Tương tác nhánh đấu (Bracket):</strong> Sử dụng con lăn chuột để phóng to/thu nhỏ, nhấn
                         giữ chuột trái và kéo để di chuyển nhánh đấu.</li>
                     <li><strong>Nhánh đấu động:</strong> Khi một trận đấu kết thúc thực tế, đội tuyển thắng cuộc sẽ tự

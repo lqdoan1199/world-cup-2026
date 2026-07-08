@@ -2,6 +2,87 @@
 // WORLD CUP 2026 BRACKET TRACKER & LIVE API LOGIC
 // ====================================================
 
+// --- OPENFOOTBALL API CONFIGURATION ---
+const OPENFOOTBALL_API_URL = "https://cdn.jsdelivr.net/gh/openfootball/worldcup.json@master/2026/worldcup.json";
+
+// --- OPENFOOTBALL MAPPING HELPERS ---
+function formatScorers(goalsList) {
+    if (!goalsList || goalsList.length === 0) return [];
+    return goalsList.map(g => {
+        let suffix = "'";
+        if (g.penalty) suffix = "' (p)";
+        if (g.owngoal) suffix = "'(OG)";
+        return `${g.name} ${g.minute}${suffix}`;
+    });
+}
+
+function mapOpenFootballGame(game, index) {
+    const id = game.num || (index + 1);
+    
+    let scoreHome = null;
+    let scoreAway = null;
+    let penScoreHome = null;
+    let penScoreAway = null;
+    
+    if (game.score) {
+        if (game.score.et) {
+            scoreHome = game.score.et[0];
+            scoreAway = game.score.et[1];
+        } else if (game.score.ft) {
+            scoreHome = game.score.ft[0];
+            scoreAway = game.score.ft[1];
+        }
+        if (game.score.p) {
+            penScoreHome = game.score.p[0];
+            penScoreAway = game.score.p[1];
+        }
+    }
+    
+    const finished = game.score && (game.score.ft || game.score.et) ? "TRUE" : "FALSE";
+    const time_elapsed = finished === "TRUE" ? "finished" : "notstarted";
+    
+    const home_scorers = JSON.stringify(formatScorers(game.goals1));
+    const away_scorers = JSON.stringify(formatScorers(game.goals2));
+    
+    // Parse Date and Time Zone Offset
+    let formattedDate = "";
+    if (game.date) {
+        const parts = game.date.split('-');
+        if (parts.length === 3) {
+            formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`;
+        }
+    }
+    
+    let time = "12:00";
+    let offset = -4; // default US ET
+    
+    if (game.time) {
+        const timeParts = game.time.match(/(\d+:\d+)(?:\s+UTC([-+]\d+))?/);
+        if (timeParts) {
+            time = timeParts[1];
+            if (timeParts[2]) {
+                offset = parseInt(timeParts[2]);
+            }
+        }
+    }
+    
+    return {
+        id: id,
+        home_team_name_en: game.team1,
+        away_team_name_en: game.team2,
+        local_date: `${formattedDate} ${time}`,
+        offset: offset,
+        home_score: scoreHome,
+        away_score: scoreAway,
+        home_penalty_score: penScoreHome,
+        away_penalty_score: penScoreAway,
+        finished: finished,
+        time_elapsed: time_elapsed,
+        home_scorers: home_scorers,
+        away_scorers: away_scorers
+    };
+}
+
 // --- 1. TEAMS DATABASE (32 Teams with codes, ratings, and squads) ---
 const TEAMS = {
     de: { name: "Đức", code: "de", power: 91, squad: [
@@ -498,7 +579,7 @@ const API_KNOCKOUT_MAPPING = {
     
     // Round of 16 (round 1)
     89: 16, 90: 17, 93: 18, 94: 19, // Left
-    91: 20, 92: 21, 96: 22, 95: 23, // Right
+    91: 20, 92: 21, 95: 22, 96: 23, // Right
     
     // Quarter-finals (round 2)
     97: 24, 98: 25, // Left
@@ -772,17 +853,18 @@ function stopAutoRefresh() {
     }
 }
 
-// --- 6. REAL-TIME DATA FETCH FROM API ---
+// --- 6. REAL-TIME DATA FETCH FROM OPENFOOTBALL ---
 async function fetchRealTimeData() {
     apiStatusPulse.className = "ticker-pulse live";
-    tickerStatusEl.textContent = "Đang đồng bộ dữ liệu FIFA API...";
+    tickerStatusEl.textContent = "Đang đồng bộ dữ liệu...";
     
     try {
-        const response = await fetch("https://worldcup26.ir/get/games");
-        if (!response.ok) throw new Error("API network response was not OK");
+        const response = await fetch(OPENFOOTBALL_API_URL);
+        if (!response.ok) throw new Error("OpenFootball network response was not OK");
         
         const data = await response.json();
-        const games = data.games || [];
+        const rawGames = data.matches || [];
+        const games = rawGames.map((g, idx) => mapOpenFootballGame(g, idx));
         
         state.totalApiGames = games.length;
         state.scorers = {};
@@ -858,7 +940,7 @@ async function fetchRealTimeData() {
         apiGamesCountEl.textContent = `${games.filter(g => g.finished === "TRUE").length} / 104`;
         
         // Reset ticker status success
-        tickerStatusEl.textContent = "FIFA & VTV API đồng bộ thành công.";
+        tickerStatusEl.textContent = "Đồng bộ dữ liệu thành công.";
         apiStatusPulse.className = "ticker-pulse";
         
         // Render
@@ -879,15 +961,15 @@ async function fetchRealTimeData() {
         }
         
     } catch (error) {
-        console.error("API error:", error);
+        console.error("OpenFootball sync error:", error);
         tickerStatusEl.textContent = "Không thể kết nối API. Đang dùng dữ liệu lưu trữ.";
         apiStatusPulse.className = "ticker-pulse live";
         apiStatusPulse.style.backgroundColor = "var(--color-live)";
     }
 }
 
-// Convert API local_date (US Eastern Time, UTC-4 summer) to Vietnam time (UTC+7)
-function convertToVietnamTime(localDateStr) {
+// Convert API local_date to Vietnam time (UTC+7)
+function convertToVietnamTime(localDateStr, offset = -4) {
     if (!localDateStr) return null;
     
     const parts = localDateStr.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+)/);
@@ -895,12 +977,12 @@ function convertToVietnamTime(localDateStr) {
     
     const [, month, day, year, hours, minutes] = parts;
     
-    // Create UTC timestamp: local US ET (UTC-4 summer) + 4h = UTC
+    // Create UTC timestamp: subtract offset from local hours to get UTC
     const utcMs = Date.UTC(
         parseInt(year),
         parseInt(month) - 1,
         parseInt(day),
-        parseInt(hours) + 4,
+        parseInt(hours) - offset,
         parseInt(minutes)
     );
     
@@ -930,19 +1012,25 @@ function updateMatchFromApiData(slotIdx, game) {
     match.awayId = getTeamIdByName(game.away_team_name_en);
     
     // Convert time to Vietnam timezone (UTC+7)
-    const vnTime = convertToVietnamTime(game.local_date);
+    const vnTime = convertToVietnamTime(game.local_date, game.offset);
     if (vnTime) {
         match.date = vnTime.date;
         match.time = vnTime.time;
     }
     
     // Score
-    match.scoreHome = game.home_score !== null && game.home_score !== "null" ? parseInt(game.home_score) : 0;
-    match.scoreAway = game.away_score !== null && game.away_score !== "null" ? parseInt(game.away_score) : 0;
+    match.scoreHome = game.home_score !== null && game.home_score !== "null" && game.home_score !== "" ? parseInt(game.home_score) : 0;
+    if (isNaN(match.scoreHome)) match.scoreHome = 0;
+    
+    match.scoreAway = game.away_score !== null && game.away_score !== "null" && game.away_score !== "" ? parseInt(game.away_score) : 0;
+    if (isNaN(match.scoreAway)) match.scoreAway = 0;
     
     // Penalties
-    match.penScoreHome = game.home_penalty_score !== null && game.home_penalty_score !== "null" ? parseInt(game.home_penalty_score) : 0;
-    match.penScoreAway = game.away_penalty_score !== null && game.away_penalty_score !== "null" ? parseInt(game.away_penalty_score) : 0;
+    match.penScoreHome = game.home_penalty_score !== null && game.home_penalty_score !== "null" && game.home_penalty_score !== "" ? parseInt(game.home_penalty_score) : 0;
+    if (isNaN(match.penScoreHome)) match.penScoreHome = 0;
+    
+    match.penScoreAway = game.away_penalty_score !== null && game.away_penalty_score !== "null" && game.away_penalty_score !== "" ? parseInt(game.away_penalty_score) : 0;
+    if (isNaN(match.penScoreAway)) match.penScoreAway = 0;
     
     // Status
     if (game.finished === "TRUE") {
